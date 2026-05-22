@@ -3,14 +3,26 @@
 #include <cmath>
 #include <iostream>
 
-// Интегрирование по формуле Симпсона
+// Интегрирование по формуле Симпсона (с защитой границ)
 double integrate_smooth(const std::function<double(double)>& func, double a, double b, int n = 20) {
     if (std::abs(b - a) < 1e-14) return 0.0;
-    double h = (b - a) / n;
-    double sum = func(a) + func(b);
+    
+    // Эпсилон-сдвиг: отступаем от краев на одну десятимиллиардную, 
+    // чтобы не наступить в точку разрыва или сингулярность x=0
+    const double eps = 1e-10;
+    double a_safe = a + eps;
+    double b_safe = b - eps;
+
+    double h = (b_safe - a_safe) / n;
+    
+    // Берем функцию на безопасных краях
+    double sum = func(a_safe) + func(b_safe);
+    
+    // Внутренние узлы Симпсона
     for (int i = 1; i < n; i++) {
-        sum += func(a + i * h) * ((i % 2 == 0) ? 2.0 : 4.0);
+        sum += func(a_safe + i * h) * ((i % 2 == 0) ? 2.0 : 4.0);
     }
+    
     return sum * h / 3.0;
 }
 
