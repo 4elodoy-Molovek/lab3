@@ -5,9 +5,10 @@ TaskContext get_task4_main_mixed_bvp() {
     TaskContext ctx;
     ctx.xi = 0.25;
 
-    // Основная задача: используем оригинальные функции 2-го варианта
+    // Используем sqrt(x + 0.1) для k(x) слева, чтобы избежать деления на ноль 
+    // при численном интегрировании 1/k(x) в точке x=0!
     ctx.q = [](double x) { return (x < 0.25) ? 1.0 : (x * x); };
-    ctx.k = [](double x) { return (x < 0.25) ? std::sqrt(x) : (x + 1.0); };
+    ctx.k = [](double x) { return (x < 0.25) ? std::sqrt(x + 0.1) : (x + 1.0); };
     ctx.f = [](double x) { return (x < 0.25) ? 1.0 : (2.0 + std::sqrt(x)); };
 
     // Краевые условия (Смешанные) - Вариант 2в
